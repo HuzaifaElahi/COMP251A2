@@ -7,17 +7,11 @@ public class Kruskal{
     public static WGraph kruskal(WGraph g){
     	WGraph mst = new WGraph();
         ArrayList<Edge> edges = g.listOfEdgesSorted();
-      //  ArrayList<ArrayList<Integer>> sets = null;
         DisjointSets p = new DisjointSets(g.getNbNodes());
-      /*  for(int i = 0; i < g.getNbNodes() ; i++) {
-            ArrayList<Integer> vertices = null;
-            vertices.add(i);
-        	sets.add(i, vertices);
-        }*/
+   
         for(Edge e : edges) {
         	int nodeA = e.nodes[0];
         	int nodeB = e.nodes[1];
-        	int weight = e.weight;
         	if(IsSafe(p, e)) {
         		p.union(nodeA, nodeB);
         		mst.addEdge(e);
