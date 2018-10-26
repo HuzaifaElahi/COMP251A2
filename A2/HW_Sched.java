@@ -27,11 +27,11 @@ class Assignment implements Comparator<Assignment>{
 	 */
 	@Override
 	public int compare(Assignment a1, Assignment a2) {
-		
+
 		// Sorting logic:
 		// Try to sort in increasing order of deadlines
-		// If deadlines equal, sort in increasing order of weight 
-		
+		// If deadlines equal, sort in decreasing order of weight 
+
 		if(a1.deadline > a2.deadline) {		        // a2 due before a1: a2 before
 			return 1;
 
@@ -40,11 +40,11 @@ class Assignment implements Comparator<Assignment>{
 
 		} else {		     						// a1 and a2 same deadline
 
-			if (a1.weight > a2.weight){        // a1 higher importance
-				return 1;
-
-			} else if(a1.weight < a2.weight){  // a2 higher importance
+			if (a1.weight > a2.weight){        // a2 higher importance
 				return -1;
+
+			} else if(a1.weight < a2.weight){  // a1 higher importance
+				return 1;
 
 			} else {					// a2 and a1 same
 				return 0;
@@ -80,32 +80,60 @@ public class HW_Sched {
 		//Collections.sort(Assignments, new Assignment());
 		//This will re-order your assignments. The resulting order will depend on how the compare function is implemented
 		Collections.sort(Assignments, new Assignment());
+		
 		//Initializes the homeworkPlan, which you must fill out and output
 		int[] homeworkPlan = new int[Assignments.size()];
-				
+
+		int hwDone = 0;		
+
 		for(int count = 0 ; count < Assignments.size() ; count++) {
 			Assignment a1 = Assignments.get(count);
-			
+			Assignment a2 = null;
 			// Comparison logic:
 			// If last member of array, insert as it is the greedy choice for sure
 			// because we sort in increasing order of deadlines (if equal, then increasing weights)
 			// else use the next member of array to compare if a1 is the biggest weighted 
 			// member for it's corresponding deadline time
-			
-			if(count == Assignments.size()-1) {
-				homeworkPlan[a1.number] = a1.deadline;
-			}else {
-				
-				// Compare to next assignment in array
 
-				Assignment a2 = Assignments.get(count+1);				
-				if(a1.deadline == a2.deadline) {       // If same deadline, not the biggest weight for that deadline of a1
-					homeworkPlan[a1.number] = 0;
-				} else { 							   // New deadline, therefore a1 deadline has biggest weight for that time
-					homeworkPlan[a1.number] = a1.deadline;
+
+			// Compare to next assignment in array
+
+			// Add first one
+			if(count == 0) {
+				hwDone++;
+				homeworkPlan[a1.number] = hwDone;
+				continue;
+			}
+
+			// Only check next assignment if count is in range
+			if(count < Assignments.size()-1) {
+				a2 = Assignments.get(count+1);	
+			} 
+			else {   // for last assignment
+				if(a1.deadline == hwDone) {    // if all homework done, return
+					return homeworkPlan;
+				}else {          // fill last slot then return
+					hwDone++;
+					homeworkPlan[a1.number] = hwDone;
+				}
+				return homeworkPlan;
+			}
+
+			if(a2.deadline == a1.deadline) {       // If same deadline
+				if(hwDone == a2.deadline) {     // do nothing if slots already filled
+					homeworkPlan[a2.number] = 0;
+				}
+				else {    // add homework
+					hwDone++;
+					homeworkPlan[a1.number] = hwDone;
 				}
 			}
+			else { 							   // New deadline, hence biggest weight
+				hwDone++;
+				homeworkPlan[a2.number] = hwDone;
+			}
 		}
+
 		return homeworkPlan;
 	}
 }
